@@ -1,12 +1,12 @@
 import express from "express";
 import mongoose from "mongoose";
 import multer from "multer";
+import cors from 'cors'
 
 import { registerValidation, loginValidation, postCreateValidation } from './validations/validations.js'
 
-import checkAuth from './utils/checkAuth.js'
-import * as UserController from './Controllers/UserController.js'
-import * as PostController from './Controllers/PostController.js'
+import { UserController, PostController } from './Controllers/index.js'
+import { handleValidationErrors, checkAuth } from './utils/index.js'
 
 mongoose.connect('mongodb+srv://admin:wwwwww@cluster0.agofg.mongodb.net/blog?retryWrites=true&w=majority')
     .then(() => {
@@ -30,11 +30,12 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use(express.json());
+app.use(cors());
 app.use('/uploads', express.static('uploads'))
 
 // user
-app.post('/auth/login', loginValidation, UserController.login);
-app.post('/auth/register', registerValidation, UserController.register);
+app.post('/auth/login', loginValidation, handleValidationErrors, UserController.login);
+app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register);
 app.get('/auth/me', checkAuth, UserController.getMe);
 
 // upload file
@@ -47,8 +48,8 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
 // articles
 app.get('/posts', PostController.getAll);
 app.get('/posts/:id', PostController.getOne);
-app.post('/posts', checkAuth, postCreateValidation, PostController.create)
-app.patch('/posts/:id', checkAuth, postCreateValidation, PostController.update)
+app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create)
+app.patch('/posts/:id', checkAuth, postCreateValidation, handleValidationErrors, PostController.update)
 app.delete('/posts/:id', checkAuth, PostController.remove);
 
 app.listen(4444, (err) => {
