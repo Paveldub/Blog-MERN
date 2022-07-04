@@ -1,17 +1,5 @@
-# Blog-MERN
+back-end part.
 
-# Node, Express
+- npm/yarn install
 
-# MongoDB
-
-# Mongoose
-
-# React 18
-
-# Redux Toolkit
-
-# React router dom V6
-
-# React hook form
-
-# JWT
+- npm/yarn run start:dev
